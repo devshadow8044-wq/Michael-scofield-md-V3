@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--a:#f5c451;--bg:#060b14;--p:#0c1424;--l:#1b2a45;--t:#e8eefc;--m:#8a9bbd;--ok:#3ddc97;--er:#ff5d73}
-[data-t=cyan]{--a:#4cc9f0}[data-t=green]{--a:#3ddc97}[data-t=red]{--a:#ff5d73}
+[data-t=cyan]{--a:#4cc9f0}[data-t=green]{--a:#3ddc97}[data-t=red]{--a:#ff5d73}[data-t=violet]{--a:#a78bfa}[data-t=pink]{--a:#ff6ec7}
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--t);font:400 16px/1.6 'Space Grotesk',system-ui,sans-serif;overflow-x:hidden}
@@ -17,7 +17,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradi
 .w{max-width:960px;margin:0 auto;padding:0 20px}
 nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;gap:12px}
 .dots{display:flex;gap:8px}.dots i{width:22px;height:22px;border-radius:50%;background:var(--c);border:2px solid var(--l);cursor:pointer}
-.dots i[data-c=gold]{--c:#f5c451}.dots i[data-c=cyan]{--c:#4cc9f0}.dots i[data-c=green]{--c:#3ddc97}.dots i[data-c=red]{--c:#ff5d73}
+.dots i[data-c=gold]{--c:#f5c451}.dots i[data-c=cyan]{--c:#4cc9f0}.dots i[data-c=green]{--c:#3ddc97}.dots i[data-c=red]{--c:#ff5d73}.dots i[data-c=violet]{--c:#a78bfa}.dots i[data-c=pink]{--c:#ff6ec7}
 .pill{display:inline-flex;align-items:center;gap:8px;font:700 13px 'JetBrains Mono',monospace;padding:6px 12px;border:1px solid var(--l);border-radius:99px;background:var(--p)}
 .pill b{width:9px;height:9px;border-radius:50%;background:var(--er)}.pill.on b{background:var(--ok);box-shadow:0 0 10px var(--ok)}
 header{padding:56px 0 32px;text-align:center}
@@ -57,35 +57,59 @@ footer{text-align:center;color:var(--m);padding:40px 0;font-size:14px}
 #toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);background:var(--a);color:#06101f;padding:10px 20px;border-radius:99px;font-weight:700;transition:.3s;z-index:9}
 #toast.s{transform:translate(-50%,0)}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:8}
+#bgimg{position:fixed;inset:0;z-index:-4;background:center/cover no-repeat}
+#bgimg:after{content:"";position:absolute;inset:0;background:linear-gradient(#060b14b3,#060b14ee)}
+.lights{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none}
+.o{position:absolute;width:60vmax;height:60vmax;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--a) 38%,transparent),transparent 65%);animation:dr 18s ease-in-out infinite alternate}
+.o:nth-child(1){top:-25vmax;left:-20vmax}.o:nth-child(2){bottom:-30vmax;right:-20vmax;animation-delay:-6s;opacity:.7}.o:nth-child(3){top:30%;left:40%;width:30vmax;height:30vmax;animation-delay:-12s;opacity:.5}
+@keyframes dr{to{transform:translate(8vmax,6vmax) scale(1.2)}}
+.beam{position:absolute;top:-20%;left:-40%;width:35%;height:140%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--a) 16%,transparent),transparent);transform:rotate(18deg);animation:sw 10s linear infinite}
+@keyframes sw{to{left:120%}}
+#spot{position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(280px circle at var(--x,50%) var(--y,30%),color-mix(in srgb,var(--a) 15%,transparent),transparent)}
+.av{position:relative;width:132px;height:132px;margin:6px auto 20px;border-radius:50%;box-shadow:0 0 44px color-mix(in srgb,var(--a) 45%,transparent)}
+.av:before{content:"";position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(var(--a),transparent 40%,var(--a));animation:sp 5s linear infinite}
+@keyframes sp{to{transform:rotate(1turn)}}
+.av div{position:relative;width:100%;height:100%;border-radius:50%;border:4px solid var(--bg);background:var(--p) center/cover;display:grid;place-items:center;font:700 52px 'Space Grotesk';color:var(--a)}
+.big{width:100%;text-align:center;font-size:20px;padding:18px}
+.deco{display:flex;align-items:center;gap:14px;margin:56px 0 0;color:var(--a)}
+.deco:before,.deco:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--a))}.deco:after{transform:scaleX(-1)}
+.deco p{font:italic 500 clamp(15px,4vw,22px) 'Space Grotesk';letter-spacing:.14em;text-align:center;text-shadow:0 0 18px var(--a)}
+#mu{position:fixed;right:16px;bottom:16px;width:46px;height:46px;border-radius:50%;padding:0;font-size:20px;display:grid;place-items:center;z-index:9;background:var(--p);color:var(--a);border:1px solid var(--a)}
+#mu.on{background:var(--a);color:#06101f}#mu:not(.on){animation:pu 2s infinite}@keyframes pu{50%{transform:scale(1.1)}}
+header{padding-top:24px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
-<canvas id="bg"></canvas><canvas id="cf"></canvas>
+<div id="bgimg"></div><div class="lights"><i class="o"></i><i class="o"></i><i class="o"></i><i class="beam"></i></div><div id="spot"></div><canvas id="bg"></canvas><canvas id="cf"></canvas>
 <div class="w">
-<nav><span class="pill" id="pill"><b></b><span id="pt">Connexion…</span></span><div class="dots" aria-label="Thème"><i data-c="gold"></i><i data-c="cyan"></i><i data-c="green"></i><i data-c="red"></i></div></nav>
+<nav><span class="pill" id="pill"><b></b><span id="pt">Connexion…</span></span><div class="dots" aria-label="Thème"><i data-c="gold"></i><i data-c="cyan"></i><i data-c="green"></i><i data-c="red"></i><i data-c="violet"></i><i data-c="pink"></i></div></nav>
 <header>
+<div class="av"><div id="av0">M</div></div>
 <h1>𝑴𝑰𝑪𝑯𝑨𝑬𝑳 𝑺𝑪𝑶𝑭𝑰𝑬𝑳𝑫-𝑴𝑫 𝑽3</h1>
 <p class="sub" id="ty"></p>
-<div class="stats">
+</header>
+<section id="pair"><h2>Connecte ton WhatsApp</h2><p class="lead">Entre ton numéro, reçois ton code, lie ton appareil. C’est tout.</p>
+<div class="box"><input id="ph" class="big" type="tel" inputmode="numeric" placeholder="Ton numéro avec indicatif (ex : 221771234567)" autocomplete="tel"><button id="go" style="width:100%;margin-top:12px">Obtenir mon code</button><div id="out"></div></div></section>
+<div class="stats" style="margin:40px 0 0">
 <div class="st"><b id="s1">–</b><span>Sessions actives</span></div>
 <div class="st"><b id="s2">–</b><span>Utilisateurs</span></div>
 <div class="st"><b id="s3">–</b><span>Latence (ms)</span></div>
 <div class="st"><b id="s4">–</b><span>Commandes</span></div>
 </div>
-</header>
-<section id="pair"><h2>Connecte ton WhatsApp</h2><p class="lead">Entre ton numéro, reçois ton code, lie ton appareil. C’est tout.</p>
-<div class="box"><div class="row"><select id="cc"></select><input id="ph" type="tel" inputmode="numeric" placeholder="Ton numéro" autocomplete="tel-national"><button id="go">Obtenir mon code</button></div><div id="out"></div></div></section>
 <section><h2>Comment ça marche</h2><p class="lead">Quatre étapes, moins d’une minute.</p>
-<ol><li>Choisis ton pays et tape ton numéro.</li><li>Appuie sur « Obtenir mon code » et attends les 8 caractères.</li><li>WhatsApp → Appareils connectés → Connecter un appareil → Lier avec un numéro.</li><li>Colle le code. Ton bot répond tout de suite.</li></ol></section>
+<ol><li>Tape ton numéro avec l’indicatif pays, sans + ni espaces.</li><li>Appuie sur « Obtenir mon code » et attends les 8 caractères.</li><li>WhatsApp → Appareils connectés → Connecter un appareil → Lier avec un numéro.</li><li>Colle le code. Ton bot répond tout de suite.</li></ol></section>
 <section><h2>Explorateur de commandes</h2><p class="lead">Cherche, filtre, touche une commande pour la copier.</p>
 <input id="sq" placeholder="Rechercher une commande…" style="width:100%"><div class="chips" id="ch"></div><div class="grid" id="gr"></div></section>
 <section><h2>Ce qui le rend unique</h2><div class="cards" id="cd"></div></section>
+<div class="deco"><p>𝑳𝑬 𝑷𝑳𝑨𝑵 𝑵𝑬 𝑺’𝑨𝑹𝑹𝑬𝑻𝑬 𝑱𝑨𝑴𝑨𝑰𝑺</p></div>
 <footer>© 2026 𝙳𝙴𝚅 𝙿𝙰𝙿𝙸𝙽𝙾 𝚂𝙲𝙾𝙵𝙸𝙴𝙻𝙳 · Touche le logo 5 fois pour une surprise</footer>
 </div>
+<button id="mu" aria-label="Musique">🔇</button>
 <div id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
 <script>
+const CFG={PHOTO:"",BG:"",MUSIC:""}; // colle tes liens ici : photo de profil, image de fond, musique
 const Q=new URLSearchParams(location.search);
 if(Q.get('api'))try{localStorage.api=Q.get('api')}catch(e){}
 let API="https://REMPLACE-PAR-URL-DU-PANEL";
@@ -95,6 +119,12 @@ const ready=!API.includes('REMPLACE'),$=s=>document.querySelector(s);
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),1800)};
 const copy=(v,m)=>navigator.clipboard.writeText(v).then(()=>toast(m||'Copié'),()=>toast('Copie impossible'));
 
+if(CFG.BG)$('#bgimg').style.backgroundImage=`url("${CFG.BG}")`;
+if(CFG.PHOTO){const im=new Image();im.onload=()=>{$('#av0').style.backgroundImage=`url("${CFG.PHOTO}")`;$('#av0').textContent=''};im.src=CFG.PHOTO}
+addEventListener('pointermove',e=>{root.style.setProperty('--x',e.clientX+'px');root.style.setProperty('--y',e.clientY+'px')});
+const au=new Audio();au.loop=true;au.volume=.5;if(CFG.MUSIC)au.src=CFG.MUSIC;
+$('#mu').onclick=()=>{if(!CFG.MUSIC)return toast('Lien de la musique pas encore ajouté');const on=$('#mu').classList.contains('on');
+ if(on){au.pause();$('#mu').classList.remove('on');$('#mu').textContent='🔇'}else au.play().then(()=>{$('#mu').classList.add('on');$('#mu').textContent='🎵'}).catch(()=>toast('Musique introuvable'))};
 // thème
 const root=document.documentElement;try{root.dataset.t=localStorage.t||'gold'}catch(e){}
 document.querySelectorAll('.dots i').forEach(i=>i.onclick=()=>{root.dataset.t=i.dataset.c;try{localStorage.t=i.dataset.c}catch(e){}});
@@ -116,11 +146,8 @@ addEventListener('resize',rs);addEventListener('pointermove',e=>{M.x=e.clientX;M
  for(let j=i+1;j<P.length;j++){const q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<120){cx.globalAlpha=(1-d/120)*.25;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke()}}});
  requestAnimationFrame(dr)})();
 
-// pays
-const C=[["🇫🇷","33"],["🇸🇳","221"],["🇨🇮","225"],["🇨🇲","237"],["🇨🇩","243"],["🇨🇬","242"],["🇧🇯","229"],["🇹🇬","228"],["🇲🇱","223"],["🇧🇫","226"],["🇬🇦","241"],["🇲🇦","212"],["🇩🇿","213"],["🇹🇳","216"],["🇳🇬","234"],["🇬🇭","233"],["🇧🇪","32"],["🇨🇦","1"],["🇬🇧","44"],["🇺🇸","1"],["🇵🇰","92"]];
-$('#cc').innerHTML=C.map(c=>`<option value="${c[1]}">${c[0]} +${c[1]}</option>`).join('');
-try{$('#cc').value=localStorage.cc||'221';$('#ph').value=localStorage.ph||''}catch(e){}
-$('#ph').oninput=e=>{const d=e.target.value.replace(/\D/g,'').slice(0,12);e.target.value=d.replace(/(\d{2})(?=\d)/g,'$1 ').trim()};
+$('#ph').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,15)};
+try{$('#ph').value=localStorage.ph||''}catch(e){}
 
 // confettis
 function boom(){const k=$('#cf'),g=k.getContext('2d');k.width=innerWidth;k.height=innerHeight;const col=['#f5c451','#4cc9f0','#3ddc97','#ff5d73'];
@@ -133,10 +160,10 @@ function show(code){clearInterval(tm);let t=60;const R=26,Cc=2*Math.PI*R,ch=[...
  out.innerHTML=`<p>Ton code :</p><div class="code" title="Touche pour copier">${ch.map((c,i)=>(i==4?'<em>-</em>':'')+`<span style="animation-delay:${i*60}ms">${c}</span>`).join('')}</div><div class="ring"><svg width="64" height="64"><circle cx="32" cy="32" r="${R}" fill="none" stroke="var(--l)" stroke-width="5"/><circle id="rg" cx="32" cy="32" r="${R}" fill="none" stroke="var(--a)" stroke-width="5" stroke-dasharray="${Cc}" stroke-linecap="round"/></svg><b id="cd2">60</b></div><p style="color:var(--m);font-size:14px;margin-top:8px">Valable environ une minute. Colle-le dans WhatsApp.</p>`;
  out.querySelector('.code').onclick=()=>copy(ch.join(''),'Code copié');
  tm=setInterval(()=>{t--;$('#cd2').textContent=t;$('#rg').style.strokeDashoffset=Cc*(1-t/60);if(t<=0){clearInterval(tm);out.innerHTML='<p style="color:var(--er)">Code expiré. Demande-en un nouveau.</p>'}},1000)}
-$('#go').onclick=async()=>{const b=$('#go'),n=$('#cc').value+$('#ph').value.replace(/\D/g,'');
+$('#go').onclick=async()=>{const b=$('#go'),n=$('#ph').value.replace(/\D/g,'');
  if(!ready){out.innerHTML='<p class="err">URL du panel pas encore configurée.</p>';return}
- if(!/^\d{8,15}$/.test(n)){out.innerHTML='<p class="err">Numéro invalide (8 à 15 chiffres).</p>';return}
- try{localStorage.cc=$('#cc').value;localStorage.ph=$('#ph').value}catch(e){}
+ if(!/^\d{8,15}$/.test(n)){out.innerHTML='<p class="err">Numéro invalide. Ajoute l’indicatif pays (ex : 221771234567).</p>';return}
+ try{localStorage.ph=$('#ph').value}catch(e){}
  b.disabled=true;out.textContent='Demande en cours…';
  try{const r=await fetch(API+'/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number:n})}),d=await r.json();
   if(!r.ok||!d.pairingCode)out.innerHTML=`<p class="err">${d.error||'Échec, réessaie.'}</p>`;else show(String(d.pairingCode))}

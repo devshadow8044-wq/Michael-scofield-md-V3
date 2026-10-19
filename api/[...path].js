@@ -8,6 +8,7 @@ module.exports = async (req, res) => {
       method: req.method,
       headers: { "Content-Type": "application/json" },
       body: req.method === "POST" ? JSON.stringify(req.body || {}) : undefined,
+      signal: AbortSignal.timeout(25000),
     });
     const txt = await r.text();
     res.status(r.status);
@@ -15,6 +16,6 @@ module.exports = async (req, res) => {
     res.setHeader("Cache-Control", "no-store");
     res.send(txt);
   } catch (e) {
-    res.status(502).json({ error: "Panel injoignable : " + e.message });
+    res.status(502).json({ error: "Panel injoignable (" + ((e.cause && e.cause.code) || e.name) + ") : " + e.message });
   }
 };

@@ -95,13 +95,9 @@ header{padding-top:24px}
 <div class="st"><b id="s1">–</b><span>Sessions actives</span></div>
 <div class="st"><b id="s2">–</b><span>Utilisateurs</span></div>
 <div class="st"><b id="s3">–</b><span>Latence (ms)</span></div>
-<div class="st"><b id="s4">–</b><span>Commandes</span></div>
 </div>
 <section><h2>Comment ça marche</h2><p class="lead">Quatre étapes, moins d’une minute.</p>
 <ol><li>Tape ton numéro avec l’indicatif pays, sans + ni espaces.</li><li>Appuie sur « Obtenir mon code » et attends les 8 caractères.</li><li>WhatsApp → Appareils connectés → Connecter un appareil → Lier avec un numéro.</li><li>Colle le code. Ton bot répond tout de suite.</li></ol></section>
-<section><h2>Explorateur de commandes</h2><p class="lead">Cherche, filtre, touche une commande pour la copier.</p>
-<input id="sq" placeholder="Rechercher une commande…" style="width:100%"><div class="chips" id="ch"></div><div class="grid" id="gr"></div></section>
-<section><h2>Ce qui le rend unique</h2><div class="cards" id="cd"></div></section>
 <div class="deco"><p>𝑳𝑬 𝑷𝑳𝑨𝑵 𝑵𝑬 𝑺’𝑨𝑹𝑹𝑬𝑻𝑬 𝑱𝑨𝑴𝑨𝑰𝑺</p></div>
 <footer>© 2026 𝙳𝙴𝚅 𝙿𝙰𝙿𝙸𝙽𝙾 𝚂𝙲𝙾𝙵𝙸𝙴𝙻𝙳 · Touche le logo 5 fois pour une surprise</footer>
 </div>
@@ -109,7 +105,7 @@ header{padding-top:24px}
 <div id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
 <script>
-const CFG={PHOTO:"",BG:"",MUSIC:""}; // colle tes liens ici : photo de profil, image de fond, musique
+const CFG={PHOTO:"https://files.catbox.moe/ka8icg.jpg",BG:"",MUSIC:"https://files.catbox.moe/zf8z97.opus"}; // colle tes liens ici : photo de profil, image de fond, musique
 const Q=new URLSearchParams(location.search);
 if(Q.get('api'))try{localStorage.api=Q.get('api')}catch(e){}
 let API="https://REMPLACE-PAR-URL-DU-PANEL";
@@ -170,27 +166,10 @@ $('#go').onclick=async()=>{const b=$('#go'),n=$('#ph').value.replace(/\D/g,'');
  catch(e){out.innerHTML='<p class="err">Le panel ne répond pas. Vérifie qu’il est allumé.</p>'}
  b.disabled=false};
 
-// commandes
-const CAT={Groupe:"kick promote demote mute open tagall tag_admins hidetag invite welcome goodbye antilink antideletegc",Médias:"sticker take url img Pinterest tiktok ytmp3 ytmp4 vv readmore fancy",Fun:"aura character choose compliment dare eightball gali lovetest propose roast ship truth",Outils:"weather translate tempmail inbox siminfo cnicinfo ttstalk jid save",Bot:"menu pair owner runtime mode broadcast reactch antideletedm forxa3"};
-let cats={};for(const k in CAT)cats[k]=CAT[k].split(' ');let cur='Tous';
-function draw(){const q=$('#sq').value.toLowerCase();const all=Object.values(cats).flat();
- $('#ch').innerHTML=['Tous',...Object.keys(cats)].map(k=>`<button class="chip ${k==cur?'on':''}">${k}</button>`).join('');
- $('#ch').querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=b.textContent;draw()});
- const l=(cur=='Tous'?all:cats[cur]).filter(c=>c.toLowerCase().includes(q));
- $('#gr').innerHTML=l.map(c=>`<button class="cmd">.${c}</button>`).join('')||'<p class="lead">Aucune commande.</p>';
- $('#gr').querySelectorAll('.cmd').forEach(b=>b.onclick=()=>copy(b.textContent))}
-$('#sq').oninput=draw;draw();$('#s4').textContent=Object.values(cats).flat().length;
-
-// cartes 3D
-$('#cd').innerHTML=[["Pairing instantané","Code à 8 caractères, minuteur visible, copie en un geste."],["Statut en direct","Latence et sessions du bot mesurées en temps réel."],["Explorateur malin","Recherche, filtres et copie de chaque commande."],["4 thèmes","Or, cyan, vert ou rouge. Ton choix est gardé."]].map(c=>`<div class="card"><h3>${c[0]}</h3><p>${c[1]}</p></div>`).join('');
-document.querySelectorAll('.card').forEach(c=>{c.onpointermove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(600px) rotateY(${x*14}deg) rotateX(${-y*14}deg)`};c.onpointerleave=()=>c.style.transform=''});
-
 // statut + latence + socket
 const setOn=(o,ms)=>{$('#pill').classList.toggle('on',o);$('#pt').textContent=o?'Bot en ligne':'Bot hors ligne';$('#s3').textContent=o?ms:'–'};
 async function ping(){if(!ready){$('#pt').textContent='Panel à configurer';return}
- const t=performance.now();try{const r=await fetch(API+'/api/commands',{cache:'no-store'}),d=await r.json();setOn(true,Math.round(performance.now()-t));
-  const known=Object.values(cats).flat(),x=(d.commands||[]).filter(c=>!known.includes(c));if(x.length&&!cats.Autres){cats.Autres=x;draw()}
-  if(d.commands)$('#s4').textContent=d.commands.length}catch(e){setOn(false)}}
+ const t=performance.now();try{const r=await fetch(API+'/api/commands',{cache:'no-store'}),d=await r.json();setOn(true,Math.round(performance.now()-t));}catch(e){setOn(false)}}
 ping();setInterval(ping,15000);
 if(ready&&window.io){const s=io(API);
  s.on('statsUpdate',d=>{$('#s1').textContent=d.activeSockets;$('#s2').textContent=d.totalUsers});

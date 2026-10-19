@@ -160,9 +160,9 @@ $('#go').onclick=async()=>{const b=$('#go'),n=$('#ph').value.replace(/\D/g,'');
  if(!/^\d{8,15}$/.test(n)){out.innerHTML='<p class="err">Numéro invalide. Ajoute l’indicatif pays (ex : 221771234567).</p>';return}
  try{localStorage.ph=$('#ph').value}catch(e){}
  b.disabled=true;out.textContent='Demande en cours…';
- try{const r=await fetch(API+'/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number:n})}),d=await r.json();
-  if(!r.ok||!d.pairingCode)out.innerHTML=`<p class="err">${d.error||'Échec, réessaie.'}</p>`;else{show(String(d.pairingCode));watch(n)}}
- catch(e){out.innerHTML='<p class="err">Le panel ne répond pas. Vérifie qu’il est allumé.</p>'}
+ try{const r=await fetch(API+'/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number:n})}),tx=await r.text();let d={};try{d=JSON.parse(tx)}catch(e){}
+  if(!r.ok||!d.pairingCode)out.innerHTML=`<p class="err">${d.error||('Erreur '+r.status+' : '+tx.replace(/<[^>]*>/g,' ').trim().slice(0,140))}</p>`;else{show(String(d.pairingCode));watch(n)}}
+ catch(e){out.innerHTML='<p class="err">Connexion impossible : '+e.message+'</p>'}
  b.disabled=false};
 
 // statut + latence

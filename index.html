@@ -103,12 +103,11 @@ header{padding-top:24px}
 </div>
 <button id="mu" aria-label="Musique">🔇</button>
 <div id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
 <script>
 const CFG={PHOTO:"https://files.catbox.moe/ka8icg.jpg",BG:"",MUSIC:"https://files.catbox.moe/zf8z97.opus"}; // colle tes liens ici : photo de profil, image de fond, musique
 const Q=new URLSearchParams(location.search);
 if(Q.get('api'))try{localStorage.api=Q.get('api')}catch(e){}
-let API="https://REMPLACE-PAR-URL-DU-PANEL";
+let API="";
 try{API=Q.get('api')||localStorage.api||API}catch(e){}
 API=API.replace(/\/$/,'');
 const ready=!API.includes('REMPLACE'),$=s=>document.querySelector(s);
@@ -155,26 +154,23 @@ let tm;const out=$('#out');
 function show(code){clearInterval(tm);let t=60;const R=26,Cc=2*Math.PI*R,ch=[...code.replace(/\W/g,'')];
  out.innerHTML=`<p>Ton code :</p><div class="code" title="Touche pour copier">${ch.map((c,i)=>(i==4?'<em>-</em>':'')+`<span style="animation-delay:${i*60}ms">${c}</span>`).join('')}</div><div class="ring"><svg width="64" height="64"><circle cx="32" cy="32" r="${R}" fill="none" stroke="var(--l)" stroke-width="5"/><circle id="rg" cx="32" cy="32" r="${R}" fill="none" stroke="var(--a)" stroke-width="5" stroke-dasharray="${Cc}" stroke-linecap="round"/></svg><b id="cd2">60</b></div><p style="color:var(--m);font-size:14px;margin-top:8px">Valable environ une minute. Colle-le dans WhatsApp.</p>`;
  out.querySelector('.code').onclick=()=>copy(ch.join(''),'Code copié');
- tm=setInterval(()=>{t--;$('#cd2').textContent=t;$('#rg').style.strokeDashoffset=Cc*(1-t/60);if(t<=0){clearInterval(tm);out.innerHTML='<p style="color:var(--er)">Code expiré. Demande-en un nouveau.</p>'}},1000)}
+ tm=setInterval(()=>{t--;$('#cd2').textContent=t;$('#rg').style.strokeDashoffset=Cc*(1-t/60);if(t<=0){clearInterval(tm);clearInterval(lk);out.innerHTML='<p style="color:var(--er)">Code expiré. Demande-en un nouveau.</p>'}},1000)}
 $('#go').onclick=async()=>{const b=$('#go'),n=$('#ph').value.replace(/\D/g,'');
  if(!ready){out.innerHTML='<p class="err">URL du panel pas encore configurée.</p>';return}
  if(!/^\d{8,15}$/.test(n)){out.innerHTML='<p class="err">Numéro invalide. Ajoute l’indicatif pays (ex : 221771234567).</p>';return}
  try{localStorage.ph=$('#ph').value}catch(e){}
  b.disabled=true;out.textContent='Demande en cours…';
  try{const r=await fetch(API+'/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number:n})}),d=await r.json();
-  if(!r.ok||!d.pairingCode)out.innerHTML=`<p class="err">${d.error||'Échec, réessaie.'}</p>`;else show(String(d.pairingCode))}
+  if(!r.ok||!d.pairingCode)out.innerHTML=`<p class="err">${d.error||'Échec, réessaie.'}</p>`;else{show(String(d.pairingCode));watch(n)}}
  catch(e){out.innerHTML='<p class="err">Le panel ne répond pas. Vérifie qu’il est allumé.</p>'}
  b.disabled=false};
 
-// statut + latence + socket
+// statut + latence
 const setOn=(o,ms)=>{$('#pill').classList.toggle('on',o);$('#pt').textContent=o?'Bot en ligne':'Bot hors ligne';$('#s3').textContent=o?ms:'–'};
-async function ping(){if(!ready){$('#pt').textContent='Panel à configurer';return}
- const t=performance.now();try{const r=await fetch(API+'/api/commands',{cache:'no-store'}),d=await r.json();setOn(true,Math.round(performance.now()-t));}catch(e){setOn(false)}}
-ping();setInterval(ping,15000);
-if(ready&&window.io){const s=io(API);
- s.on('statsUpdate',d=>{$('#s1').textContent=d.activeSockets;$('#s2').textContent=d.totalUsers});
- s.on('linked',()=>{clearInterval(tm);out.innerHTML='<h3 style="color:var(--ok)">Connecté avec succès !</h3><p>Ton bot est actif. Envoie <code>.menu</code> sur WhatsApp.</p>';boom()});
- s.on('pairingTimeout',()=>{clearInterval(tm);out.innerHTML='<p class="err">Code expiré. Demande-en un nouveau.</p>'})}
+async function ping(){const t=performance.now();try{const r=await fetch(API+'/api/stats',{cache:'no-store'}),d=await r.json();setOn(true,Math.round(performance.now()-t));$('#s1').textContent=d.activeSockets;$('#s2').textContent=d.totalUsers}catch(e){setOn(false)}}
+ping();setInterval(ping,8000);
+let lk;function watch(n){clearInterval(lk);lk=setInterval(async()=>{try{const r=await fetch(API+'/api/linked/'+n,{cache:'no-store'}),d=await r.json();
+ if(d.linked){clearInterval(lk);clearInterval(tm);out.innerHTML='<h3 style="color:var(--ok)">Connecté avec succès !</h3><p>Ton bot est actif. Envoie <code>.menu</code> sur WhatsApp.</p>';boom()}}catch(e){}},3000)}
 
 // surprise
 let k=0;document.querySelector('h1').onclick=()=>{if(++k==5){k=0;boom();toast('Plan d’évasion activé');document.body.style.filter='hue-rotate(160deg)';setTimeout(()=>document.body.style.filter='',2500)}};
